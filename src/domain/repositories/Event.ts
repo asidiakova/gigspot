@@ -1,0 +1,9 @@
+import type { Event, EventId } from "../entities/Event";
+
+export interface EventRepositoryInterface {
+  findById(id: EventId): Promise<Event | null>;
+  listUpcoming(limit: number): Promise<Event[]>;
+  listByOrganizer(organizerId: string, limit?: number): Promise<Event[]>;
+  upsert(input: { id?: EventId } & Omit<Event, "id" | "createdAt">): Promise<Event>;
+  delete(id: EventId): Promise<void>;
+}
