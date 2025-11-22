@@ -1,36 +1,16 @@
-import { z } from "zod";
 import {
   EmailAlreadyInUseError,
   NicknameAlreadyInUseError,
 } from "@/domain/errors";
-import type { User, UserRole } from "@/domain/entities/User";
+import type { User } from "@/domain/entities/User";
 import type { UserRepositoryInterface } from "@/domain/repositories/UserRepositoryInterface";
 import type { PasswordHasher } from "./PasswordHasher";
-
-export const RegisterUserInputSchema = z.object({
-  email: z.string().trim().toLowerCase(),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  nickname: z
-    .string()
-    .trim()
-    .min(3)
-    .max(20)
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
-    ),
-  role: z.custom<UserRole>(
-    (val): val is UserRole => val === "user" || val === "organizer"
-  ),
-  avatarUrl: z.string().optional().or(z.literal("")),
-});
-
-export type RegisterUserInput = z.infer<typeof RegisterUserInputSchema>;
+import {
+  RegisterUserInputSchema,
+  type RegisterUserInput,
+  ChangePasswordSchema,
+  type ChangePasswordInput,
+} from "@/domain/validation/user";
 
 export class AuthService {
   private readonly userRepository: UserRepositoryInterface;
@@ -89,5 +69,32 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async changePassword(
+    userId: string,
+    input: ChangePasswordInput
+  ): Promise<void> {
+    const parsed = ChangePasswordSchema.parse(input);
+
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const isPasswordValid = await this.passwordHasher.compare(
+      parsed.currentPassword,
+      user.passwordHash
+    );
+
+    if (!isPasswordValid) {
+      throw new Error("Incorrect current password");
+    }
+
+    const newPasswordHash = await this.passwordHasher.hash(parsed.newPassword);
+
+    await this.userRepository.update(user.id, {
+      passwordHash: newPasswordHash,
+    });
   }
 }

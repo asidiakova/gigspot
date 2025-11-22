@@ -48,6 +48,26 @@ export class UserRepository implements UserRepositoryInterface {
     return UserSelectSchema.parse(row);
   }
 
+  async update(id: UserId, input: Partial<Omit<User, "id" | "createdAt">>): Promise<User> {
+    const [row] = await db
+      .update(users)
+      .set({
+        nickname: input.nickname,
+        email: input.email,
+        passwordHash: input.passwordHash,
+        role: input.role,
+        avatarUrl: input.avatarUrl,
+      })
+      .where(eq(users.id, id))
+      .returning();
+    
+    if (!row) {
+      throw new Error("User not found");
+    }
+
+    return UserSelectSchema.parse(row);
+  }
+
   async delete(id: UserId): Promise<void> {
     await db.delete(users).where(eq(users.id, id));
   }

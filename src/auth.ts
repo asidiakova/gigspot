@@ -31,17 +31,29 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
       }
+
+      if (trigger === "update" && token.id) {
+        const freshUser = await container.userRepository.findById(token.id);
+        if (freshUser) {
+          token.name = freshUser.nickname;
+          token.picture = freshUser.avatarUrl;
+          token.role = freshUser.role;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.name = token.name;
+        session.user.image = token.picture;
       }
       return session;
     },

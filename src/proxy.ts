@@ -18,8 +18,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    // protected routes placeholder
-  ],
+  matcher: ["/organizer/:path*", "/profile/:path*"],
 };
-

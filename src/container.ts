@@ -1,4 +1,5 @@
 import { AuthService } from "@/domain/services/AuthService";
+import { UserService } from "@/domain/services/UserService";
 import { UserRepository } from "@/infrastructure/repositories/UserRepository";
 import { BcryptPasswordHasher } from "@/infrastructure/security/BcryptPasswordHasher";
 import { config } from "@/config";
@@ -13,7 +14,14 @@ const authService = new AuthService({
   passwordHasher,
 });
 
+const userService = new UserService({
+  userRepository,
+});
+
 // DI Container
 export const container = {
   authService,
+  userService,
+  userRepository,
+  passwordHasher,
 };

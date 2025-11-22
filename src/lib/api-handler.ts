@@ -20,8 +20,9 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
       }
 
       if (error instanceof z.ZodError) {
+        const message = error.issues[0]?.message || "Invalid input";
         return NextResponse.json(
-          { error: "Invalid input", details: error.issues },
+          { error: message, details: error.issues },
           { status: 400 }
         );
       }
