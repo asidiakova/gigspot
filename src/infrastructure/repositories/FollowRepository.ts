@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { follows } from "@/db";
 import { and, eq } from "drizzle-orm";
-import type { FollowRepositoryInterface } from "@/domain/repositories/Follow";
+import type { FollowRepositoryInterface } from "@/domain/repositories/FollowRepositoryInterface";
 
 export class FollowRepository implements FollowRepositoryInterface {
   async follow(followerId: string, organizerId: string): Promise<void> {

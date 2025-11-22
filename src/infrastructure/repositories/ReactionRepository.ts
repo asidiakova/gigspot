@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { reactions } from "@/db";
 import { and, count, eq } from "drizzle-orm";
-import type { ReactionRepositoryInterface } from "@/domain/repositories/Reaction";
+import type { ReactionRepositoryInterface } from "@/domain/repositories/ReactionRepositoryInterface";
 
 export class ReactionRepository implements ReactionRepositoryInterface {
   async add(userId: string, eventId: string): Promise<void> {

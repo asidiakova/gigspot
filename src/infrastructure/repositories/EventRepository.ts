@@ -2,10 +2,10 @@ import { db } from "@/db";
 import { events } from "@/db";
 import { desc, eq, gt } from "drizzle-orm";
 import type { Event, EventId } from "@/domain/entities/Event";
-import type { EventRepositoryInterface } from "@/domain/repositories/Event";
+import type { EventRepositoryInterface } from "@/domain/repositories/EventRepositoryInterface";
 import {
   EventInsertSchema,
-  EventSelectSchema
+  EventSelectSchema,
 } from "@/infrastructure/schemas/Event";
 import { randomUUID } from "node:crypto";
 
