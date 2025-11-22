@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { DomainError, EmailAlreadyInUseError, NicknameAlreadyInUseError } from "@/domain/errors";
 import { z } from "zod";
 
-type ApiHandler = (req: Request) => Promise<NextResponse>;
+type ApiHandler = (req: Request, ...args: unknown[]) => Promise<NextResponse>;
 
 export function withErrorHandling(handler: ApiHandler): ApiHandler {
-  return async (req: Request) => {
+  return async (req: Request, ...args: unknown[]) => {
     try {
-      return await handler(req);
+      return await handler(req, ...args);
     } catch (error) {
       console.error("API Error:", error);
 

@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { reactions } from "@/db";
-import { and, count, eq } from "drizzle-orm";
+import { reactions, users } from "@/db";
+import { and, count, eq, desc } from "drizzle-orm";
 import type { ReactionRepositoryInterface } from "@/domain/repositories/ReactionRepositoryInterface";
 
 export class ReactionRepository implements ReactionRepositoryInterface {
@@ -32,5 +32,23 @@ export class ReactionRepository implements ReactionRepositoryInterface {
       .from(reactions)
       .where(eq(reactions.eventId, eventId));
     return Number(row?.value ?? 0);
+  }
+
+  async getRecentAttendants(
+    eventId: string,
+    limit: number
+  ): Promise<{ nickname: string; avatarUrl: string | null }[]> {
+    const rows = await db
+      .select({
+        nickname: users.nickname,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(reactions)
+      .innerJoin(users, eq(reactions.userId, users.id))
+      .where(eq(reactions.eventId, eventId))
+      .orderBy(desc(reactions.createdAt))
+      .limit(limit);
+
+    return rows;
   }
 }

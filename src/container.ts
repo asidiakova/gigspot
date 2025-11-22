@@ -1,11 +1,15 @@
 import { AuthService } from "@/domain/services/AuthService";
 import { UserService } from "@/domain/services/UserService";
 import { UserRepository } from "@/infrastructure/repositories/UserRepository";
+import { EventRepository } from "@/infrastructure/repositories/EventRepository";
+import { ReactionRepository } from "@/infrastructure/repositories/ReactionRepository";
 import { BcryptPasswordHasher } from "@/infrastructure/security/BcryptPasswordHasher";
 import { config } from "@/config";
 
 // Infrastructure
 const userRepository = new UserRepository();
+const eventRepository = new EventRepository();
+const reactionRepository = new ReactionRepository();
 const passwordHasher = new BcryptPasswordHasher(config.auth.saltRounds);
 
 // Domain
@@ -23,5 +27,7 @@ export const container = {
   authService,
   userService,
   userRepository,
+  eventRepository,
+  reactionRepository,
   passwordHasher,
 };
