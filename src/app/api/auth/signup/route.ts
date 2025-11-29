@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { RegisterUserInputSchema } from "@/domain/validation/user";
+import { RegisterUserInputSchema } from "@/infrastructure/schemas/User";
 import { withErrorHandling } from "@/lib/api-handler";
 import { container } from "@/container";
 

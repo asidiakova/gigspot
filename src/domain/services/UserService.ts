@@ -2,7 +2,7 @@ import type { UserRepositoryInterface } from "@/domain/repositories/UserReposito
 import {
   UpdateProfileSchema,
   type UpdateProfileInput,
-} from "@/domain/validation/user";
+} from "@/infrastructure/schemas/User";
 import type { User } from "@/domain/entities/User";
 
 export class UserService {

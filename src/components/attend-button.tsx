@@ -20,7 +20,7 @@ export function AttendButton({ eventId, initialIsAttending }: AttendButtonProps)
     setIsLoading(true);
     try {
       const res = await fetch(`/api/events/${eventId}/attend`, {
-        method: "POST",
+        method: isAttending ? "DELETE" : "POST",
       });
 
       if (!res.ok) throw new Error("Failed to update attendance");
