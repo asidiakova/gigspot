@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { container } from "@/container";
-import { UpdateEventSchema } from "@/infrastructure/schemas/Event";
 import { IdParamsSchema } from "@/infrastructure/schemas/shared";
 import { withErrorHandling } from "@/lib/api-handler";
 
@@ -27,21 +26,7 @@ export const PATCH = withErrorHandling(
     }
 
     const json = await req.json();
-    const input = UpdateEventSchema.parse(json);
-
-    const updatedData = {
-      title: input.title ?? event.title,
-      flyerUrl: input.flyerUrl ?? event.flyerUrl,
-      datetime: input.datetime ?? event.datetime,
-      city: input.city ?? event.city,
-      location: input.location ?? event.location,
-      price: input.price ?? event.price,
-      description: input.description ?? event.description,
-      id: eventId,
-      organizerId: session.user.id,
-    };
-
-    const updatedEvent = await container.eventRepository.upsert(updatedData);
+    const updatedEvent = await container.eventService.updateEvent(event, json);
 
     return NextResponse.json(updatedEvent);
   }

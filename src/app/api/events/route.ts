@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { container } from "@/container";
-import { CreateEventSchema } from "@/infrastructure/schemas/Event";
 import { withErrorHandling } from "@/lib/api-handler";
 
 export const POST = withErrorHandling(async (req: Request) => {
@@ -17,12 +16,7 @@ export const POST = withErrorHandling(async (req: Request) => {
   }
 
   const json = await req.json();
-  const input = CreateEventSchema.parse(json);
-
-  const event = await container.eventRepository.upsert({
-    ...input,
-    organizerId: session.user.id,
-  });
+  const event = await container.eventService.createEvent(session.user.id, json);
 
   return NextResponse.json(event, { status: 201 });
 });

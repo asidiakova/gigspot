@@ -2,6 +2,7 @@ import {
   EmailAlreadyInUseError,
   NicknameAlreadyInUseError,
 } from "@/domain/errors";
+import { IncorrectPasswordError, DomainError } from "@/domain/errors";
 import type { User } from "@/domain/entities/User";
 import type { UserRepositoryInterface } from "@/domain/repositories/UserRepositoryInterface";
 import type { PasswordHasher } from "./PasswordHasher";
@@ -88,7 +89,11 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new Error("Incorrect current password");
+      throw new IncorrectPasswordError();
+    }
+
+    if (parsed.newPassword === parsed.currentPassword) {
+      throw new DomainError("New password must be different from current password");
     }
 
     const newPasswordHash = await this.passwordHasher.hash(parsed.newPassword);

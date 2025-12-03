@@ -4,6 +4,7 @@ import {
   type UpdateProfileInput,
 } from "@/domain/validation/user";
 import type { User } from "@/domain/entities/User";
+import { NicknameAlreadyInUseError } from "@/domain/errors";
 
 export class UserService {
   private readonly userRepository: UserRepositoryInterface;
@@ -17,6 +18,13 @@ export class UserService {
     input: UpdateProfileInput
   ): Promise<User> {
     const parsed = UpdateProfileSchema.parse(input);
+
+    const existingByNickname = await this.userRepository.findByNickname(
+      parsed.nickname
+    );
+    if (existingByNickname && existingByNickname.id !== userId) {
+      throw new NicknameAlreadyInUseError(parsed.nickname);
+    }
 
     return await this.userRepository.update(userId, {
       nickname: parsed.nickname,

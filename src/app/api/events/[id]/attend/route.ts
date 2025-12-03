@@ -16,7 +16,7 @@ export const POST = withErrorHandling(async (req: Request, context: unknown) => 
   const eventId = params.id;
   const userId = session.user.id;
 
-  await container.reactionRepository.add(userId, eventId);
+  await container.attendanceService.attend(userId, session.user.role, eventId);
   return NextResponse.json({ attending: true });
 });
 
@@ -31,7 +31,7 @@ export const DELETE = withErrorHandling(async (req: Request, context: unknown) =
   const eventId = params.id;
   const userId = session.user.id;
 
-  await container.reactionRepository.remove(userId, eventId);
+  await container.attendanceService.unattend(userId, eventId);
   return NextResponse.json({ attending: false });
 });
 

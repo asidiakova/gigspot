@@ -5,6 +5,8 @@ import { EventRepository } from "@/infrastructure/repositories/EventRepository";
 import { ReactionRepository } from "@/infrastructure/repositories/ReactionRepository";
 import { BcryptPasswordHasher } from "@/infrastructure/security/BcryptPasswordHasher";
 import { config } from "@/config";
+import { EventService } from "@/domain/services/EventService";
+import { AttendanceService } from "@/domain/services/AttendanceService";
 
 // Infrastructure
 const userRepository = new UserRepository();
@@ -22,10 +24,21 @@ const userService = new UserService({
   userRepository,
 });
 
+const eventService = new EventService({
+  eventRepository,
+});
+
+const attendanceService = new AttendanceService({
+  eventRepository,
+  reactionRepository,
+});
+
 // DI Container
 export const container = {
   authService,
   userService,
+  eventService,
+  attendanceService,
   userRepository,
   eventRepository,
   reactionRepository,

@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { UserRole } from "@/domain/entities/User";
 
 export const registerUserInputShape = {
-  email: z.string().trim().toLowerCase(),
+  email: z.email("Invalid email"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
