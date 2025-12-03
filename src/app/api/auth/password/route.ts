@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { container } from "@/container";
-import { ChangePasswordSchema } from "@/infrastructure/schemas/User";
+import { ChangePasswordSchema } from "@/domain/validation/user";
 import { withErrorHandling } from "@/lib/api-handler";
 
 export const PATCH = withErrorHandling(async (req: Request) => {

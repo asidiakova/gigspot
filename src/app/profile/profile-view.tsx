@@ -17,6 +17,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import {
+  UpdateProfileSchema,
+  ChangePasswordSchema,
+} from "@/domain/validation/user";
+import { validate, type FieldErrors } from "@/lib/validation";
+import { FieldError } from "@/components/form/field-error";
 
 export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
   const router = useRouter();
@@ -34,18 +40,28 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
     confirmPassword: "",
   });
 
+  const [profileErrors, setProfileErrors] = useState<
+    FieldErrors<{ nickname: string; avatarUrl: string }>
+  >({});
+  const [passwordErrors, setPasswordErrors] = useState<
+    FieldErrors<{ currentPassword: string; newPassword: string }>
+  >({});
+
   async function handleProfileUpdate(e: React.FormEvent) {
     e.preventDefault();
+    const result = validate(UpdateProfileSchema, profileData);
+    if ("errors" in result) {
+      setProfileErrors(result.errors);
+      return;
+    }
+    setProfileErrors({});
     setIsLoading(true);
 
     try {
       const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nickname: profileData.nickname,
-          avatarUrl: profileData.avatarUrl,
-        }),
+        body: JSON.stringify(profileData),
       });
 
       const result = await res.json();
@@ -72,6 +88,16 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
       toast.error("New passwords do not match");
       return;
     }
+
+    const result = validate(ChangePasswordSchema, {
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    });
+    if ("errors" in result) {
+      setPasswordErrors(result.errors);
+      return;
+    }
+    setPasswordErrors({});
 
     setIsLoading(true);
 
@@ -149,6 +175,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                         })
                       }
                     />
+                  <FieldError messages={profileErrors.avatarUrl} />
                   </div>
                 </div>
 
@@ -166,6 +193,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                     required
                     minLength={2}
                   />
+                <FieldError messages={profileErrors.nickname} />
                 </div>
 
                 <div className="space-y-2">
@@ -211,6 +239,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                     }
                     required
                   />
+                  <FieldError messages={passwordErrors.currentPassword} />
                 </div>
 
                 <div className="space-y-2">
@@ -228,6 +257,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                     required
                     minLength={6}
                   />
+                  <FieldError messages={passwordErrors.newPassword} />
                 </div>
 
                 <div className="space-y-2">

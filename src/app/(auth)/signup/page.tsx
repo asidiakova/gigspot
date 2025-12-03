@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { RegisterUserInputSchema } from "@/domain/validation/user";
+import { validate, type FieldErrors } from "@/lib/validation";
+import { FieldError } from "@/components/form/field-error";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -12,16 +15,32 @@ export default function SignupPage() {
   const [role, setRole] = useState<"user" | "organizer">("user");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FieldErrors<{
+    email: string;
+    password: string;
+    nickname: string;
+    role: "user" | "organizer";
+    avatarUrl?: string;
+  }>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const input = { email, password, nickname, role };
+    const result = validate(RegisterUserInputSchema, input);
+    if ("errors" in result) {
+      setErrors(result.errors);
+      return;
+    }
+    setErrors({});
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, nickname, role }),
+        body: JSON.stringify(input),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -58,6 +77,7 @@ export default function SignupPage() {
           required
           className="border p-2"
         />
+        <FieldError messages={errors.nickname} />
         <input
           type="email"
           placeholder="Email"
@@ -66,6 +86,7 @@ export default function SignupPage() {
           required
           className="border p-2"
         />
+        <FieldError messages={errors.email} />
         <input
           type="password"
           placeholder="Password (min 8 chars)"
@@ -75,6 +96,7 @@ export default function SignupPage() {
           minLength={8}
           className="border p-2"
         />
+        <FieldError messages={errors.password} />
 
         <select
           value={role}
@@ -84,6 +106,7 @@ export default function SignupPage() {
           <option value="user">User</option>
           <option value="organizer">Organizer</option>
         </select>
+        <FieldError messages={errors.role} />
         <button
           type="submit"
           disabled={submitting}

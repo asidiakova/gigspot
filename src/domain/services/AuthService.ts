@@ -10,7 +10,7 @@ import {
   type RegisterUserInput,
   ChangePasswordSchema,
   type ChangePasswordInput,
-} from "@/infrastructure/schemas/User";
+} from "@/domain/validation/user";
 
 export class AuthService {
   private readonly userRepository: UserRepositoryInterface;
