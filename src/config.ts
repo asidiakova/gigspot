@@ -16,6 +16,7 @@ export const config = {
   auth: {
     secret: envParams.data.NEXTAUTH_SECRET,
     saltRounds: 12,
+    maxAgeSecs: 60 * 24 * 30, // 1 day
   },
   db: {
     url: envParams.data.DATABASE_URL,

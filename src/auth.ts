@@ -5,7 +5,7 @@ import { config } from "@/config";
 
 export const authOptions: NextAuthOptions = {
   secret: config.auth.secret,
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: config.auth.maxAgeSecs },
   providers: [
     Credentials({
       credentials: {
@@ -17,7 +17,10 @@ export const authOptions: NextAuthOptions = {
         const password = credentials?.password;
         if (!email || !password) return null;
 
-        const user = await container.authService.validateCredentials(email, password);
+        const user = await container.authService.validateCredentials(
+          email,
+          password
+        );
         if (!user) return null;
 
         return {
