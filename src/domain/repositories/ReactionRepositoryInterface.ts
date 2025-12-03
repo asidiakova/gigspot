@@ -4,6 +4,7 @@ export interface ReactionRepositoryInterface {
   has(userId: string, eventId: string): Promise<boolean>;
   countForEvent(eventId: string): Promise<number>;
   getRecentAttendants(eventId: string, limit: number): Promise<{ nickname: string; avatarUrl: string | null }[]>;
+  getAttendants(eventId: string): Promise<{ id: string; nickname: string; avatarUrl: string | null }[]>;
 }
 
 

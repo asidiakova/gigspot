@@ -26,7 +26,8 @@ export default async function EventDetailsPage(props: PageProps) {
     notFound();
   }
 
-  const isOrganizer = session?.user?.id === event.organizerId;
+  const isEventOwner = session?.user?.id === event.organizerId;
+  const isOrganizerRole = session?.user?.role === "organizer";
   const isAttending = session?.user?.id
     ? await container.reactionRepository.has(session.user.id, eventId)
     : false;
@@ -39,15 +40,15 @@ export default async function EventDetailsPage(props: PageProps) {
   // Format attendants text
   let attendingText;
   if (attendantsCount === 0) {
-    attendingText = "Be the first to attend!";
+    attendingText = "Nobody is attending yet";
   } else {
     const names = recentAttendants.map((a) => a.nickname).join(", ");
     const remaining = attendantsCount - recentAttendants.length;
 
     if (remaining > 0) {
-      attendingText = `${names}, and ${remaining} more attending`;
+      attendingText = `${names}, and ${remaining} more are attending`;
     } else {
-      attendingText = `${names} attending`;
+      attendingText = `${names} are attending`;
     }
   }
 
@@ -110,7 +111,18 @@ export default async function EventDetailsPage(props: PageProps) {
                 </div>
               )}
             </div>
-            <p className="text-sm text-muted-foreground">{attendingText}</p>
+            <div className="text-sm">
+              {attendantsCount > 0 ? (
+                <Link
+                  href={`/events/${eventId}/attendees`}
+                  className="text-muted-foreground hover:underline"
+                >
+                  {attendingText}
+                </Link>
+              ) : (
+                <p className="text-muted-foreground">{attendingText}</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -133,15 +145,17 @@ export default async function EventDetailsPage(props: PageProps) {
           </div>
 
           <div className="flex justify-start">
-            {isOrganizer ? (
+            {isEventOwner ? (
               <Button asChild className="w-full md:w-auto">
                 <Link href={`/events/${eventId}/edit`}>Edit Event</Link>
               </Button>
             ) : session?.user ? (
-              <AttendButton
-                eventId={eventId}
-                initialIsAttending={isAttending}
-              />
+              !isOrganizerRole && (
+                <AttendButton
+                  eventId={eventId}
+                  initialIsAttending={isAttending}
+                />
+              )
             ) : (
               <Button asChild className="w-full md:w-auto">
                 <Link href="/login">Login to Attend</Link>

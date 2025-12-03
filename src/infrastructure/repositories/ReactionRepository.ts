@@ -51,4 +51,21 @@ export class ReactionRepository implements ReactionRepositoryInterface {
 
     return rows;
   }
+
+  async getAttendants(
+    eventId: string
+  ): Promise<{ id: string; nickname: string; avatarUrl: string | null }[]> {
+    const rows = await db
+      .select({
+        id: users.id,
+        nickname: users.nickname,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(reactions)
+      .innerJoin(users, eq(reactions.userId, users.id))
+      .where(eq(reactions.eventId, eventId))
+      .orderBy(desc(reactions.createdAt));
+
+    return rows;
+  }
 }
