@@ -1,8 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -42,34 +53,57 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="p-4">
-      <h1 className="text-xl mb-4">Login</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
-        <input
-          type="text"
-          placeholder="Email or nickname"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
-          required
-          className="border p-2"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="border p-2"
-        />
-        <button
-          type="submit"
-          disabled={submitting}
-          className="border px-3 py-2"
-        >
-          {submitting ? "Signing in..." : "Login"}
-        </button>
-        {error ? <p className="text-red-600">{error}</p> : null}
-      </form>
+    <main className="grid min-h-svh place-items-center px-4 py-12">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">Welcome back</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="identifier">Email or nickname</Label>
+              <Input
+                id="identifier"
+                type="text"
+                placeholder="you@example.com"
+                autoComplete="username email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                disabled={submitting}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={submitting}
+                required
+              />
+            </div>
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            <Button type="submit" disabled={submitting} className="w-full">
+              {submitting ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="justify-center">
+          <p className="text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link
+              className="text-primary underline-offset-4 hover:underline"
+              href="/signup"
+            >
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </main>
   );
 }

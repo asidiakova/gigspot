@@ -31,7 +31,7 @@ export function MainNav({
           href="/events/mine"
           className={cn(
             "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
-            pathname === "/events/mine"
+            pathname.includes("/events/mine")
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
           )}
@@ -42,4 +42,3 @@ export function MainNav({
     </nav>
   );
 }
-

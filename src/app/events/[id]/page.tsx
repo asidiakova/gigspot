@@ -37,7 +37,8 @@ export default async function EventDetailsPage(props: PageProps) {
   const recentAttendants =
     await container.reactionRepository.getRecentAttendants(eventId, 3);
 
-  // Format attendants text
+  const isEventInPast = new Date(event.datetime) < new Date();
+
   let attendingText;
   if (attendantsCount === 0) {
     attendingText = "Nobody is attending yet";
@@ -45,11 +46,12 @@ export default async function EventDetailsPage(props: PageProps) {
     const names = recentAttendants.map((a) => a.nickname).join(", ");
     const remaining = attendantsCount - recentAttendants.length;
 
-    if (remaining > 0) {
-      attendingText = `${names}, and ${remaining} more are attending`;
-    } else {
-      attendingText = `${names} are attending`;
-    }
+    attendingText =
+      remaining > 0
+        ? `${names}, and ${remaining} more are attending`
+        : attendantsCount > 1
+          ? `${names} are attending`
+          : `${names} is attending`;
   }
 
   return (
@@ -154,6 +156,7 @@ export default async function EventDetailsPage(props: PageProps) {
                 <AttendButton
                   eventId={eventId}
                   initialIsAttending={isAttending}
+                  isPastEvent={isEventInPast}
                 />
               )
             ) : (
