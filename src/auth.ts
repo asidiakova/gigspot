@@ -9,19 +9,31 @@ export const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email", type: "email" },
+        identifier: { label: "Email or nickname", type: "text" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const email = credentials?.email;
+        const identifier = credentials?.identifier;
         const password = credentials?.password;
-        if (!email || !password) return null;
+        if (!identifier || !password) {
+          throw new Error("MissingCredentials");
+        }
 
-        const user = await container.authService.validateCredentials(
-          email,
-          password
+        const user = await container.userRepository.findByEmailOrNickname(
+          identifier
         );
-        if (!user) return null;
+
+        if (!user) {
+          throw new Error("AccountNotFound");
+        }
+
+        const isValid = await container.passwordHasher.compare(
+          password,
+          user.passwordHash
+        );
+        if (!isValid) {
+          throw new Error("InvalidPassword");
+        }
 
         return {
           id: user.id,

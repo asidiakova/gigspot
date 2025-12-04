@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { users } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, or, ilike } from "drizzle-orm";
 import type { User, UserId } from "@/domain/entities/User";
 import type { UserRepositoryInterface } from "@/domain/repositories/UserRepositoryInterface";
 import {
@@ -32,6 +32,17 @@ export class UserRepository implements UserRepositoryInterface {
       .select()
       .from(users)
       .where(eq(users.nickname, nickname))
+      .limit(1);
+    return row ? UserSelectSchema.parse(row) : null;
+  }
+
+  async findByEmailOrNickname(identifier: string): Promise<User | null> {
+    const trimmed = identifier.trim();
+    const normalizedEmail = trimmed.toLowerCase();
+    const [row] = await db
+      .select()
+      .from(users)
+      .where(or(eq(users.nickname, trimmed), ilike(users.email, normalizedEmail)))
       .limit(1);
     return row ? UserSelectSchema.parse(row) : null;
   }

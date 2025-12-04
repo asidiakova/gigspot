@@ -28,9 +28,12 @@ export class AuthService {
   async registerUser(input: RegisterUserInput): Promise<User> {
     const parsed = RegisterUserInputSchema.parse(input);
 
-    const existingByEmail = await this.userRepository.findByEmail(parsed.email);
+    const normalizedEmail = parsed.email.trim().toLowerCase();
+
+    const existingByEmail =
+      await this.userRepository.findByEmail(normalizedEmail);
     if (existingByEmail) {
-      throw new EmailAlreadyInUseError(parsed.email);
+      throw new EmailAlreadyInUseError(normalizedEmail);
     }
 
     const existingByNickname = await this.userRepository.findByNickname(
@@ -44,32 +47,11 @@ export class AuthService {
 
     return await this.userRepository.create({
       nickname: parsed.nickname,
-      email: parsed.email,
+      email: normalizedEmail,
       passwordHash,
       role: parsed.role,
       avatarUrl: parsed.avatarUrl || null,
     });
-  }
-
-  async validateCredentials(
-    email: string,
-    password: string
-  ): Promise<User | null> {
-    const normalizedEmail = email.trim().toLowerCase();
-    const user = await this.userRepository.findByEmail(normalizedEmail);
-    if (!user) {
-      return null;
-    }
-
-    const isValid = await this.passwordHasher.compare(
-      password,
-      user.passwordHash
-    );
-    if (!isValid) {
-      return null;
-    }
-
-    return user;
   }
 
   async changePassword(
@@ -93,7 +75,9 @@ export class AuthService {
     }
 
     if (parsed.newPassword === parsed.currentPassword) {
-      throw new DomainError("New password must be different from current password");
+      throw new DomainError(
+        "New password must be different from current password"
+      );
     }
 
     const newPasswordHash = await this.passwordHasher.hash(parsed.newPassword);

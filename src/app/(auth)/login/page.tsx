@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,12 +17,20 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const res = await signIn("credentials", {
-        email,
+        identifier,
         password,
         redirect: false,
       });
       if (res?.error) {
-        setError("Invalid email or password");
+        if (res.error === "AccountNotFound") {
+          setError(`Account for ${identifier} does not exist`);
+        } else if (res.error === "InvalidPassword") {
+          setError("Invalid password");
+        } else if (res.error === "MissingCredentials") {
+          setError("Please fill in both fields");
+        } else {
+          setError("Invalid email or password");
+        }
         setSubmitting(false);
         return;
       }
@@ -38,10 +46,10 @@ export default function LoginPage() {
       <h1 className="text-xl mb-4">Login</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Email or nickname"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
           required
           className="border p-2"
         />
