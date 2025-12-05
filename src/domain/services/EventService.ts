@@ -4,7 +4,11 @@ import {
   CreateEventInputSchema,
   UpdateEventInputSchema,
 } from "@/domain/validation/event";
-import { EventAlreadyStartedError } from "@/domain/errors";
+import {
+  EventAlreadyStartedError,
+  EventNotFoundError,
+  UnauthorizedError,
+} from "@/domain/errors";
 import type { z } from "zod";
 
 type CreateEventInput = z.infer<typeof CreateEventInputSchema>;
@@ -50,6 +54,19 @@ export class EventService {
       price: parsed.price ?? event.price,
       description: parsed.description ?? event.description,
     });
+  }
+
+  async deleteEvent(userId: string, eventId: string): Promise<void> {
+    const event = await this.eventRepository.findById(eventId);
+    if (!event) {
+      throw new EventNotFoundError(eventId);
+    }
+
+    if (event.organizerId !== userId) {
+      throw new UnauthorizedError();
+    }
+
+    await this.eventRepository.delete(eventId);
   }
 }
 

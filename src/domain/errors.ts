@@ -51,3 +51,9 @@ export class UserAlreadyDeletedError extends DomainError {
     super("User account has already been deleted");
   }
 }
+
+export class UnauthorizedError extends DomainError {
+  constructor() {
+    super("Unauthorized");
+  }
+}

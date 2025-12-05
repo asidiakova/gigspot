@@ -11,6 +11,7 @@ export type Event = {
   price: string;
   description: string;
   createdAt: Date;
+  deletedAt?: Date | null;
 };
 
 

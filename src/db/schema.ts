@@ -37,6 +37,7 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
 export const reactions = pgTable(

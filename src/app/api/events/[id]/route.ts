@@ -31,3 +31,18 @@ export const PATCH = withErrorHandling(
     return NextResponse.json(updatedEvent);
   }
 );
+
+export const DELETE = withErrorHandling(
+  async (req: Request, context: unknown) => {
+    const { params } = await IdParamsSchema.parseAsync(context);
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await container.eventService.deleteEvent(session.user.id, params.id);
+
+    return NextResponse.json({ success: true });
+  }
+);

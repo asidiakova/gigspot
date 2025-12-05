@@ -6,6 +6,7 @@ import {
   EventNotFoundError,
   UserNotFoundError,
   UserAlreadyDeletedError,
+  UnauthorizedError,
 } from "@/domain/errors";
 import { z } from "zod";
 
@@ -17,6 +18,10 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
       return await handler(req, ...args);
     } catch (error) {
       console.error("API Error:", error);
+
+      if (error instanceof UnauthorizedError) {
+        return NextResponse.json({ error: error.message }, { status: 403 });
+      }
 
       if (error instanceof EmailAlreadyInUseError || error instanceof NicknameAlreadyInUseError) {
         return NextResponse.json({ error: error.message }, { status: 409 });

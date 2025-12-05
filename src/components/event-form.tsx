@@ -31,6 +31,7 @@ type EventFormErrors = FieldErrors<EventFormFields>;
 export function EventForm({ initialData }: EventFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isEditing = !!initialData;
 
   const [formData, setFormData] = useState<EventFormFields>({
@@ -46,6 +47,35 @@ export function EventForm({ initialData }: EventFormProps) {
   });
 
   const [errors, setErrors] = useState<EventFormErrors>({});
+
+  const handleDelete = async () => {
+    if (!initialData?.id) return;
+
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/events/${initialData.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Failed to delete event");
+      }
+
+      toast.success("Event deleted successfully");
+      router.push("/events/mine");
+      router.refresh();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } finally {
+      setIsLoading(false);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -203,7 +233,7 @@ export function EventForm({ initialData }: EventFormProps) {
         <FieldError messages={errors.flyerUrl} />
       </div>
 
-      <div className="pt-4">
+      <div className="pt-4 space-y-4">
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading
             ? isEditing
@@ -213,7 +243,49 @@ export function EventForm({ initialData }: EventFormProps) {
             ? "Update Event"
             : "Create Event"}
         </Button>
+
+        {isEditing && (
+          <Button
+            type="button"
+            variant="destructive"
+            className="w-full"
+            disabled={isLoading}
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            Delete Event
+          </Button>
+        )}
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full space-y-4">
+            <h3 className="text-lg font-semibold">Delete Event</h3>
+            <p className="text-muted-foreground">
+              Are you sure you want to delete this event? You will not be able to
+              recover it.
+            </p>
+            <div className="flex justify-end gap-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isLoading}
+              >
+                {isLoading ? "Deleting..." : "Yes, Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
