@@ -4,7 +4,11 @@ import {
   type UpdateProfileInput,
 } from "@/domain/validation/user";
 import type { User } from "@/domain/entities/User";
-import { NicknameAlreadyInUseError } from "@/domain/errors";
+import {
+  NicknameAlreadyInUseError,
+  UserAlreadyDeletedError,
+  UserNotFoundError,
+} from "@/domain/errors";
 
 export class UserService {
   private readonly userRepository: UserRepositoryInterface;
@@ -30,6 +34,19 @@ export class UserService {
       nickname: parsed.nickname,
       avatarUrl: parsed.avatarUrl || null,
     });
+  }
+
+  async delete(userId: string): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new UserNotFoundError(userId);
+    }
+    if (user.deletedAt) {
+      throw new UserAlreadyDeletedError();
+    }
+
+    await this.userRepository.delete(userId);
+    return;
   }
 }
 

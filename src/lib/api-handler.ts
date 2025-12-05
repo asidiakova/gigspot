@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
-import { DomainError, EmailAlreadyInUseError, NicknameAlreadyInUseError, EventNotFoundError } from "@/domain/errors";
+import {
+  DomainError,
+  EmailAlreadyInUseError,
+  NicknameAlreadyInUseError,
+  EventNotFoundError,
+  UserNotFoundError,
+  UserAlreadyDeletedError,
+} from "@/domain/errors";
 import { z } from "zod";
 
 type ApiHandler = (req: Request, ...args: unknown[]) => Promise<NextResponse>;
@@ -17,6 +24,14 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
 
       if (error instanceof EventNotFoundError) {
         return NextResponse.json({ error: error.message }, { status: 404 });
+      }
+
+      if (error instanceof UserNotFoundError) {
+        return NextResponse.json({ error: error.message }, { status: 404 });
+      }
+
+      if (error instanceof UserAlreadyDeletedError) {
+        return NextResponse.json({ error: error.message }, { status: 409 });
       }
 
       if (error instanceof DomainError) {

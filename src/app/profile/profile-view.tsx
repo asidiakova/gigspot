@@ -16,18 +16,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import {
   UpdateProfileSchema,
   ChangePasswordSchema,
 } from "@/domain/validation/user";
 import { validate, type FieldErrors } from "@/lib/validation";
 import { FieldError } from "@/components/form/field-error";
+import { Separator } from "@/components/ui/separator";
 
 export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
   const router = useRouter();
   const { update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const [profileData, setProfileData] = useState({
     nickname: user.nickname,
@@ -132,6 +134,25 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
     }
   }
 
+  async function handleDeleteAccount() {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/profile", { method: "DELETE" });
+      if (!res.ok && res.status !== 204) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to delete account");
+      }
+      toast.success("Account deleted");
+      await signOut({ callbackUrl: "/" });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="container mx-auto py-10 max-w-3xl">
       <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
@@ -175,7 +196,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                         })
                       }
                     />
-                  <FieldError messages={profileErrors.avatarUrl} />
+                    <FieldError messages={profileErrors.avatarUrl} />
                   </div>
                 </div>
 
@@ -193,7 +214,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                     required
                     minLength={2}
                   />
-                <FieldError messages={profileErrors.nickname} />
+                  <FieldError messages={profileErrors.nickname} />
                 </div>
 
                 <div className="space-y-2">
@@ -221,7 +242,6 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
           <Card>
             <CardHeader>
               <CardTitle>Password</CardTitle>
-              <CardDescription>Change your password securely.</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePasswordChange} className="space-y-4">
@@ -281,6 +301,53 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                   {isLoading ? "Updating..." : "Change Password"}
                 </Button>
               </form>
+              <Separator className="mt-10 mb-6" />
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Delete Account</CardTitle>
+                  <CardDescription>
+                    Permanently delete your account and all associated data.
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="destructive"
+                  onClick={() => setIsDeleteConfirmOpen(true)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Processing..." : "Delete account"}
+                </Button>
+              </div>
+              {isDeleteConfirmOpen && (
+                <div className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 p-4 space-y-3">
+                  <p className="text-sm font-medium">
+                    Are you sure you want to delete your account?
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    This action cannot be undone. All your data will be permanently removed.
+                  </p>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsDeleteConfirmOpen(false)}
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => {
+                        setIsDeleteConfirmOpen(false);
+                        void handleDeleteAccount();
+                      }}
+                      disabled={isLoading}
+                    >
+                      Yes, delete
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

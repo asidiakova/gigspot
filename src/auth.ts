@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { container } from "@/container";
 import { config } from "@/config";
+import { UserAlreadyDeletedError, UserNotFoundError } from "@/domain/errors";
 
 export const authOptions: NextAuthOptions = {
   secret: config.auth.secret,
@@ -19,12 +20,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error("MissingCredentials");
         }
 
-        const user = await container.userRepository.findByEmailOrNickname(
-          identifier
-        );
+        const user =
+          await container.userRepository.findByEmailOrNickname(identifier);
 
         if (!user) {
-          throw new Error("AccountNotFound");
+          throw new UserNotFoundError();
+        }
+        if (user.deletedAt) {
+          throw new UserAlreadyDeletedError();
         }
 
         const isValid = await container.passwordHasher.compare(

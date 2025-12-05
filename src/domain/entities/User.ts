@@ -9,4 +9,5 @@ export type User = {
   role: UserRole;
   avatarUrl?: string | null;
   createdAt: Date;
+  deletedAt?: Date | null;
 };

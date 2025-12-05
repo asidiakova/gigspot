@@ -40,3 +40,14 @@ export class IncorrectPasswordError extends DomainError {
   }
 }
 
+export class UserNotFoundError extends DomainError {
+  constructor(id?: string) {
+    super(`User "${id}" not found`);
+  }
+}
+
+export class UserAlreadyDeletedError extends DomainError {
+  constructor() {
+    super("User account has already been deleted");
+  }
+}

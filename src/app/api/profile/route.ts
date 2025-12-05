@@ -20,3 +20,14 @@ export const PATCH = withErrorHandling(async (req: Request) => {
   return NextResponse.json({ success: true });
 });
 
+export const DELETE = withErrorHandling(async () => {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  await container.userService.delete(session.user.id);
+  return new NextResponse(null, { status: 204 });
+});
+
