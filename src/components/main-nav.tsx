@@ -38,6 +38,17 @@ export function MainNav({
         >
           My Events
         </Link>
+        <Link
+          href="/events/following"
+          className={cn(
+            "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
+            pathname.includes("/events/following")
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          Following
+        </Link>
       </div>
     </nav>
   );
