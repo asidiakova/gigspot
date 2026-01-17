@@ -3,9 +3,10 @@ import { authOptions } from "@/auth";
 import Link from "next/link";
 import { container } from "@/container";
 import { EventCard } from "@/components/event-card";
-import { redirect } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserListItem } from "@/components/user-list-item";
 
-export default async function FollowingEventsPage() {
+export default async function FollowingPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -14,23 +15,58 @@ export default async function FollowingEventsPage() {
         <h1 className="text-3xl font-bold mb-6">Following</h1>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
           <p className="text-lg">
-            To view events from organizers you follow,{" "}
+            Please{" "}
             <Link href="/login" className="text-blue-600 hover:underline">
               log in
             </Link>{" "}
             or{" "}
             <Link href="/signup" className="text-blue-600 hover:underline">
               sign up
-            </Link>
-            .
+            </Link>{" "}
+            to continue.
           </p>
         </div>
       </div>
     );
   }
 
-  if (session.user.role === "organizer") {
-    redirect("/events");
+  const isOrganizer = session.user.role === "organizer";
+
+  if (isOrganizer) {
+    const followers = await container.followRepository.getFollowers(
+      session.user.id
+    );
+
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-3xl font-bold mb-6">Your Followers</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">
+              {followers.length} {followers.length === 1 ? "follower" : "followers"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {followers.length === 0 ? (
+              <p className="text-muted-foreground">
+                You don&apos;t have any followers yet.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {followers.map((f) => (
+                  <UserListItem
+                    key={f.id}
+                    id={f.id}
+                    nickname={f.nickname}
+                    avatarUrl={f.avatarUrl}
+                  />
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   const events = await container.eventRepository.listByFollowedOrganizers(
@@ -63,4 +99,3 @@ export default async function FollowingEventsPage() {
     </div>
   );
 }
-

@@ -4,13 +4,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface AttendeeItemProps {
+interface UserListItemProps {
   id: string;
   nickname: string;
   avatarUrl: string | null;
 }
 
-export function AttendeeItem({ id, nickname, avatarUrl }: AttendeeItemProps) {
+export function UserListItem({ id, nickname, avatarUrl }: UserListItemProps) {
   const { data: session } = useSession();
   const router = useRouter();
 

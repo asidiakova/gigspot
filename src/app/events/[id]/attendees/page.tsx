@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AttendeeItem } from "./attendee-item";
+import { UserListItem } from "@/components/user-list-item";
 
 interface PageProps {
   params: Promise<{
@@ -40,7 +40,7 @@ export default async function AttendeesPage(props: PageProps) {
           ) : (
             <ul className="space-y-3">
               {attendees.map((a) => (
-                <AttendeeItem
+                <UserListItem
                   key={a.id}
                   id={a.id}
                   nickname={a.nickname}
