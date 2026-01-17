@@ -2,10 +2,10 @@ import { container } from "@/container";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AttendeeItem } from "./attendee-item";
 
 interface PageProps {
   params: Promise<{
@@ -40,15 +40,12 @@ export default async function AttendeesPage(props: PageProps) {
           ) : (
             <ul className="space-y-3">
               {attendees.map((a) => (
-                <li key={a.id} className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={a.avatarUrl ?? undefined} />
-                    <AvatarFallback>
-                      {a.nickname?.[0]?.toUpperCase() ?? "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium">{a.nickname}</span>
-                </li>
+                <AttendeeItem
+                  key={a.id}
+                  id={a.id}
+                  nickname={a.nickname}
+                  avatarUrl={a.avatarUrl}
+                />
               ))}
             </ul>
           )}

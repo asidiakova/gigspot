@@ -39,6 +39,8 @@ export default async function EventDetailsPage(props: PageProps) {
 
   const isEventInPast = new Date(event.datetime) < new Date();
 
+  const organizer = await container.userRepository.findById(event.organizerId);
+
   let attendingText;
   if (attendantsCount === 0) {
     attendingText = "Nobody is attending yet";
@@ -59,14 +61,11 @@ export default async function EventDetailsPage(props: PageProps) {
       <h1 className="text-3xl md:text-4xl font-bold mb-8">{event.title}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Details */}
         <div className="space-y-6">
-          {/* Description Box */}
           <div className="bg-muted/50 rounded-lg p-6 text-sm md:text-base leading-relaxed whitespace-pre-wrap">
             {event.description}
           </div>
 
-          {/* Info Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-muted-foreground">
               <CalendarIcon className="h-5 w-5" />
@@ -93,7 +92,24 @@ export default async function EventDetailsPage(props: PageProps) {
             </div>
           </div>
 
-          {/* Attendants Section */}
+          {organizer && (
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground mb-2">Organized by</p>
+              <Link
+                href={isEventOwner ? "/profile" : `/users/${organizer.id}`}
+                className="flex items-center gap-3 p-2 -m-2 rounded-md hover:bg-muted transition-colors"
+              >
+                <Avatar>
+                  <AvatarImage src={organizer.avatarUrl ?? undefined} />
+                  <AvatarFallback>
+                    {organizer.nickname[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{organizer.nickname}</span>
+              </Link>
+            </div>
+          )}
+
           <div className="flex items-center gap-4 pt-4 border-t">
             <div className="flex -space-x-3">
               {recentAttendants.map((attendant, i) => (
@@ -128,7 +144,6 @@ export default async function EventDetailsPage(props: PageProps) {
           </div>
         </div>
 
-        {/* Right Column: Image & Action */}
         <div className="space-y-6">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted border">
             {event.flyerUrl ? (

@@ -7,6 +7,8 @@ import {
   UserNotFoundError,
   UserAlreadyDeletedError,
   UnauthorizedError,
+  CannotFollowSelfError,
+  CannotFollowNonOrganizerError,
 } from "@/domain/errors";
 import { z } from "zod";
 
@@ -23,7 +25,10 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
         return NextResponse.json({ error: error.message }, { status: 403 });
       }
 
-      if (error instanceof EmailAlreadyInUseError || error instanceof NicknameAlreadyInUseError) {
+      if (
+        error instanceof EmailAlreadyInUseError ||
+        error instanceof NicknameAlreadyInUseError
+      ) {
         return NextResponse.json({ error: error.message }, { status: 409 });
       }
 
@@ -37,6 +42,13 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
 
       if (error instanceof UserAlreadyDeletedError) {
         return NextResponse.json({ error: error.message }, { status: 409 });
+      }
+
+      if (
+        error instanceof CannotFollowSelfError ||
+        error instanceof CannotFollowNonOrganizerError
+      ) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
       }
 
       if (error instanceof DomainError) {
@@ -58,4 +70,3 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
     }
   };
 }
-
