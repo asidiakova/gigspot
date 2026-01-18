@@ -266,8 +266,8 @@ export function EventForm({ initialData }: EventFormProps) {
       </div>
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full space-y-4">
+        <div className="modal-backdrop">
+          <div className="modal-content space-y-4">
             <h3 className="text-lg font-semibold">Delete Event</h3>
             <p className="text-muted-foreground">
               Are you sure you want to delete this event? You will not be able to

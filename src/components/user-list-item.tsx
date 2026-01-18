@@ -18,10 +18,7 @@ export function UserListItem({ id, nickname, avatarUrl }: UserListItemProps) {
   const href = isCurrentUser ? "/profile" : `/users/${id}`;
 
   return (
-    <li
-      onClick={() => router.push(href)}
-      className="flex items-center gap-3 p-2 -m-2 rounded-md cursor-pointer hover:bg-muted transition-colors"
-    >
+    <li onClick={() => router.push(href)} className="list-item-interactive">
       <Avatar>
         <AvatarImage src={avatarUrl ?? undefined} />
         <AvatarFallback>{nickname?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>

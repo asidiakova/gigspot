@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 export function MainNav({
   className,
@@ -15,14 +16,12 @@ export function MainNav({
       className={cn("flex items-center justify-center", className)}
       {...props}
     >
-      <div className="flex items-center bg-muted rounded-full p-1">
+      <div className="pill-nav">
         <Link
           href="/events"
           className={cn(
-            "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
-            pathname === "/events" || pathname === "/"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+            "pill-nav-item",
+            (pathname === "/events" || pathname === "/") && "active"
           )}
         >
           All Events
@@ -30,10 +29,8 @@ export function MainNav({
         <Link
           href="/events/mine"
           className={cn(
-            "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
-            pathname.includes("/events/mine")
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+            "pill-nav-item",
+            pathname.includes("/events/mine") && "active"
           )}
         >
           My Events
@@ -41,10 +38,8 @@ export function MainNav({
         <Link
           href="/events/following"
           className={cn(
-            "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
-            pathname.includes("/events/following")
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+            "pill-nav-item",
+            pathname.includes("/events/following") && "active"
           )}
         >
           Following

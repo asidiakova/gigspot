@@ -7,7 +7,7 @@ export function FieldError({ messages }: { messages?: string[] }) {
   return (
     <ul className="mt-1 space-y-0.5">
       {messages.map((msg, idx) => (
-        <li key={idx} className="text-sm text-red-500">
+        <li key={idx} className="field-error">
           {msg}
         </li>
       ))}

@@ -20,9 +20,9 @@ export default async function MainFeed(props: PageProps) {
   ]);
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="page-section animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <h1 className="text-3xl font-bold">Upcoming events</h1>
+        <h1 className="page-title mb-0">Upcoming events</h1>
         
         <div className="w-full md:w-auto flex flex-col gap-1">
           <span className="text-sm text-muted-foreground ml-1">City</span>
@@ -31,14 +31,14 @@ export default async function MainFeed(props: PageProps) {
       </div>
 
       {events.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-          <p className="text-lg">No upcoming events found.</p>
+        <div className="empty-state py-20">
+          <p className="text-lg text-muted-foreground">No upcoming events found.</p>
           {city && (
-            <p className="text-sm mt-2">Try selecting a different city.</p>
+            <p className="text-sm mt-2 text-muted-foreground">Try selecting a different city.</p>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="events-grid">
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}

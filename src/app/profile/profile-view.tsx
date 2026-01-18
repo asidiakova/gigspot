@@ -155,7 +155,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
   }
 
   return (
-    <div className="container mx-auto py-10 max-w-3xl">
+    <div className="page-section max-w-3xl animate-fade-in">
       <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
 
       <Tabs defaultValue="general" className="w-full">
@@ -318,7 +318,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                 </Button>
               </div>
               {isDeleteConfirmOpen && (
-                <div className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 p-4 space-y-3">
+                <div className="confirm-dialog mt-4 space-y-3">
                   <p className="text-sm font-medium">
                     Are you sure you want to delete your account?
                   </p>

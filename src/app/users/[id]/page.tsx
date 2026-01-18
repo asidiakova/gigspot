@@ -35,7 +35,7 @@ export default async function UserProfilePage(props: PageProps) {
     : false;
 
   return (
-    <div className="container mx-auto py-10 max-w-2xl">
+    <div className="page-section max-w-2xl animate-fade-in">
       <Card>
         <CardHeader className="flex flex-row items-center gap-6">
           <Avatar className="h-24 w-24">

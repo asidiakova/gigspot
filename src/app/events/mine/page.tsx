@@ -10,16 +10,16 @@ export default async function MyEventsPage() {
 
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">My Events</h1>
-        <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
-          <p className="text-lg">
+      <div className="page-section">
+        <h1 className="page-title">My Events</h1>
+        <div className="empty-state">
+          <p className="auth-prompt">
             To view your events,{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className="link-styled">
               log in
             </Link>{" "}
             or{" "}
-            <Link href="/signup" className="text-blue-600 hover:underline">
+            <Link href="/signup" className="link-styled">
               sign up
             </Link>
             .
@@ -39,9 +39,9 @@ export default async function MyEventsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">My Events</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="page-section animate-fade-in">
+      <h1 className="page-title">My Events</h1>
+      <div className="events-grid">
         {isOrganizer && <NewEventCard />}
         {events.map((event) => (
           <EventCard key={event.id} event={event} />

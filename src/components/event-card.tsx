@@ -18,8 +18,8 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-md">
-      <div className="relative h-48 w-full bg-muted">
+    <Card className="flex flex-col h-full overflow-hidden card-hover">
+      <div className="event-card-image">
         {event.flyerUrl ? (
           <Image
             src={event.flyerUrl}
@@ -28,9 +28,7 @@ export function EventCard({ event }: EventCardProps) {
             className="object-cover"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            No Image
-          </div>
+          <div className="no-image-placeholder">No Image</div>
         )}
       </div>
       <CardHeader>

@@ -11,16 +11,16 @@ export default async function FollowingPage() {
 
   if (!session?.user) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Following</h1>
-        <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
-          <p className="text-lg">
+      <div className="page-section">
+        <h1 className="page-title">Following</h1>
+        <div className="empty-state">
+          <p className="auth-prompt">
             Please{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className="link-styled">
               log in
             </Link>{" "}
             or{" "}
-            <Link href="/signup" className="text-blue-600 hover:underline">
+            <Link href="/signup" className="link-styled">
               sign up
             </Link>{" "}
             to continue.
@@ -38,8 +38,8 @@ export default async function FollowingPage() {
     );
 
     return (
-      <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Your Followers</h1>
+      <div className="page-section animate-fade-in">
+        <h1 className="page-title">Your Followers</h1>
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">
@@ -74,23 +74,23 @@ export default async function FollowingPage() {
   );
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Following</h1>
+    <div className="page-section animate-fade-in">
+      <h1 className="page-title">Following</h1>
       {events.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-8 text-center">
+        <div className="empty-state">
           <p className="text-lg text-muted-foreground">
             No upcoming events from organizers you follow.
           </p>
           <p className="text-sm text-muted-foreground mt-2">
             Browse{" "}
-            <Link href="/events" className="text-blue-600 hover:underline">
+            <Link href="/events" className="link-styled">
               all events
             </Link>{" "}
             to discover new organizers.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="events-grid">
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}

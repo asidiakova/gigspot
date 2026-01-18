@@ -23,7 +23,7 @@ export default async function AttendeesPage(props: PageProps) {
   const attendees = await container.reactionRepository.getAttendants(eventId);
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="page-section animate-fade-in">
       <div className="mb-6">
         <Button asChild variant="ghost">
           <Link href={`/events/${eventId}`}>← Back to event</Link>

@@ -31,7 +31,7 @@ export default async function EditEventPage(props: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 flex justify-center">
+    <div className="page-section flex justify-center animate-fade-in">
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Edit Event</CardTitle>
