@@ -34,7 +34,7 @@ export function EventCard({ event }: EventCardProps) {
         )}
       </div>
       <CardHeader>
-        <CardTitle className="line-clamp-1">{event.title}</CardTitle>
+        <CardTitle className="truncate pb-0.5">{event.title}</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 space-y-2 text-sm">
         <p className="line-clamp-2 text-muted-foreground">

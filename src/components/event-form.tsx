@@ -11,6 +11,8 @@ import { Event } from "@/domain/entities/Event";
 import { CreateEventInputSchema } from "@/domain/validation/event";
 import { validate, type FieldErrors } from "@/lib/validation";
 import { FieldError } from "@/components/form/field-error";
+import { ImageUpload } from "@/components/image-upload";
+import Image from "next/image";
 
 interface EventFormProps {
   initialData?: Event;
@@ -218,18 +220,24 @@ export function EventForm({ initialData }: EventFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="flyerUrl">Flyer Image URL</Label>
-        <Input
-          id="flyerUrl"
-          name="flyerUrl"
-          placeholder="https://example.com/flyer.jpg"
-          type="url"
+        <Label>Event Flyer</Label>
+        {formData.flyerUrl && (
+          <Image
+            src={formData.flyerUrl}
+            alt="Event flyer preview"
+            width={320}
+            height={320}
+            className="w-full max-w-xs rounded-md object-cover"
+          />
+        )}
+        <ImageUpload
+          endpoint="eventFlyer"
           value={formData.flyerUrl}
-          onChange={handleChange}
+          onUploadComplete={(url) =>
+            setFormData((prev) => ({ ...prev, flyerUrl: url }))
+          }
+          onRemove={() => setFormData((prev) => ({ ...prev, flyerUrl: "" }))}
         />
-        <p className="text-sm text-muted-foreground">
-          Provide a URL for your event flyer image.
-        </p>
         <FieldError messages={errors.flyerUrl} />
       </div>
 
