@@ -55,9 +55,9 @@ export function EventCard({ event }: EventCardProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between items-center pt-4">
-        <Badge variant="secondary" className="flex items-center gap-1">
-          <TicketIcon className="h-3 w-3" />
-          {event.price}
+        <Badge variant="secondary" className="flex items-center gap-1 max-w-[50%]">
+          <TicketIcon className="h-3 w-3 shrink-0" />
+          <span className="truncate">{event.price}</span>
         </Badge>
         <Button asChild size="sm">
           <Link href={`/events/${event.id}`}>Show more...</Link>
