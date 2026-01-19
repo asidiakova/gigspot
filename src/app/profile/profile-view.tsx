@@ -24,6 +24,7 @@ import {
 import { validate, type FieldErrors } from "@/lib/validation";
 import { FieldError } from "@/components/form/field-error";
 import { Separator } from "@/components/ui/separator";
+import { ImageUpload } from "@/components/image-upload";
 
 export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
   const router = useRouter();
@@ -154,7 +155,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
   }
 
   return (
-    <div className="container mx-auto py-10 max-w-3xl">
+    <div className="page-section max-w-3xl animate-fade-in">
       <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
 
       <Tabs defaultValue="general" className="w-full">
@@ -176,24 +177,23 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                 <div className="flex items-center gap-6">
                   <Avatar className="h-20 w-20">
                     <AvatarImage
-                      src={profileData.avatarUrl}
+                      src={profileData.avatarUrl || undefined}
                       alt={profileData.nickname}
                     />
                     <AvatarFallback className="text-lg">
                       {profileData.nickname[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="space-y-2 flex-1">
-                    <Label htmlFor="avatar">Avatar URL</Label>
-                    <Input
-                      id="avatar"
-                      placeholder="https://example.com/avatar.png"
+                  <div className="space-y-2">
+                    <Label>Profile Picture</Label>
+                    <ImageUpload
+                      endpoint="profileImage"
                       value={profileData.avatarUrl}
-                      onChange={(e) =>
-                        setProfileData({
-                          ...profileData,
-                          avatarUrl: e.target.value,
-                        })
+                      onUploadComplete={(url) =>
+                        setProfileData({ ...profileData, avatarUrl: url })
+                      }
+                      onRemove={() =>
+                        setProfileData({ ...profileData, avatarUrl: "" })
                       }
                     />
                     <FieldError messages={profileErrors.avatarUrl} />
@@ -318,7 +318,7 @@ export function ProfileView({ user }: { user: Omit<User, "passwordHash"> }) {
                 </Button>
               </div>
               {isDeleteConfirmOpen && (
-                <div className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 p-4 space-y-3">
+                <div className="confirm-dialog mt-4 space-y-3">
                   <p className="text-sm font-medium">
                     Are you sure you want to delete your account?
                   </p>

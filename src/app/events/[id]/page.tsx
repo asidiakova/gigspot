@@ -39,6 +39,8 @@ export default async function EventDetailsPage(props: PageProps) {
 
   const isEventInPast = new Date(event.datetime) < new Date();
 
+  const organizer = await container.userRepository.findById(event.organizerId);
+
   let attendingText;
   if (attendantsCount === 0) {
     attendingText = "Nobody is attending yet";
@@ -55,18 +57,15 @@ export default async function EventDetailsPage(props: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="page-section animate-fade-in">
       <h1 className="text-3xl md:text-4xl font-bold mb-8">{event.title}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Details */}
         <div className="space-y-6">
-          {/* Description Box */}
-          <div className="bg-muted/50 rounded-lg p-6 text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+          <div className="description-box md:text-base">
             {event.description}
           </div>
 
-          {/* Info Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-muted-foreground">
               <CalendarIcon className="h-5 w-5" />
@@ -93,14 +92,28 @@ export default async function EventDetailsPage(props: PageProps) {
             </div>
           </div>
 
-          {/* Attendants Section */}
+          {organizer && (
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground mb-2">Organized by</p>
+              <Link
+                href={isEventOwner ? "/profile" : `/users/${organizer.id}`}
+                className="flex items-center gap-3 p-2 -m-2 rounded-md hover:bg-muted transition-colors"
+              >
+                <Avatar>
+                  <AvatarImage src={organizer.avatarUrl ?? undefined} />
+                  <AvatarFallback>
+                    {organizer.nickname[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{organizer.nickname}</span>
+              </Link>
+            </div>
+          )}
+
           <div className="flex items-center gap-4 pt-4 border-t">
-            <div className="flex -space-x-3">
+            <div className="avatar-stack">
               {recentAttendants.map((attendant, i) => (
-                <Avatar
-                  key={i}
-                  className="border-2 border-background w-10 h-10"
-                >
+                <Avatar key={i} className="w-10 h-10">
                   <AvatarImage src={attendant.avatarUrl ?? undefined} />
                   <AvatarFallback>
                     {attendant.nickname[0].toUpperCase()}
@@ -108,7 +121,7 @@ export default async function EventDetailsPage(props: PageProps) {
                 </Avatar>
               ))}
               {attendantsCount === 0 && (
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground border-2 border-background">
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
                   0
                 </div>
               )}
@@ -128,9 +141,8 @@ export default async function EventDetailsPage(props: PageProps) {
           </div>
         </div>
 
-        {/* Right Column: Image & Action */}
         <div className="space-y-6">
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted border">
+          <div className="flyer-container">
             {event.flyerUrl ? (
               <Image
                 src={event.flyerUrl}
@@ -140,9 +152,7 @@ export default async function EventDetailsPage(props: PageProps) {
                 priority
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                No Flyer Image
-              </div>
+              <div className="no-image-placeholder">No Flyer Image</div>
             )}
           </div>
 

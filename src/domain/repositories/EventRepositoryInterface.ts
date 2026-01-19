@@ -5,6 +5,7 @@ export interface EventRepositoryInterface {
   listUpcoming(limit: number, city?: string): Promise<Event[]>;
   listByOrganizer(organizerId: string, limit?: number): Promise<Event[]>;
   listAttending(userId: string): Promise<Event[]>;
+  listByFollowedOrganizers(userId: string): Promise<Event[]>;
   upsert(input: { id?: EventId } & Omit<Event, "id" | "createdAt">): Promise<Event>;
   delete(id: EventId): Promise<void>;
   getUniqueCities(): Promise<string[]>;

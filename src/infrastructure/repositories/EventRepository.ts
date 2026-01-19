@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { events, reactions } from "@/db";
-import { desc, eq, gte, and, asc, isNull } from "drizzle-orm";
+import { events, reactions, follows } from "@/db";
+import { desc, eq, gte, and, asc, isNull, inArray } from "drizzle-orm";
 import type { Event, EventId } from "@/domain/entities/Event";
 import type { EventRepositoryInterface } from "@/domain/repositories/EventRepositoryInterface";
 import {
@@ -65,6 +65,30 @@ export class EventRepository implements EventRepositoryInterface {
       .orderBy(desc(events.datetime));
 
     return rows.map((row) => EventSelectSchema.parse(row.events));
+  }
+
+  async listByFollowedOrganizers(userId: string): Promise<Event[]> {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const followedOrganizerIds = db
+      .select({ organizerId: follows.organizerId })
+      .from(follows)
+      .where(eq(follows.followerId, userId));
+
+    const rows = await db
+      .select()
+      .from(events)
+      .where(
+        and(
+          inArray(events.organizerId, followedOrganizerIds),
+          gte(events.datetime, now),
+          isNull(events.deletedAt)
+        )
+      )
+      .orderBy(asc(events.datetime));
+
+    return rows.map((r) => EventSelectSchema.parse(r));
   }
 
   async upsert(

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { follows } from "@/db";
+import { follows, users } from "@/db";
 import { and, eq } from "drizzle-orm";
 import type { FollowRepositoryInterface } from "@/domain/repositories/FollowRepositoryInterface";
 
@@ -38,11 +38,18 @@ export class FollowRepository implements FollowRepositoryInterface {
     return rows.length > 0;
   }
 
-  async listOrganizersFollowedBy(userId: string): Promise<string[]> {
+  async getFollowers(
+    organizerId: string
+  ): Promise<{ id: string; nickname: string; avatarUrl: string | null }[]> {
     const rows = await db
-      .select({ organizerId: follows.organizerId })
+      .select({
+        id: users.id,
+        nickname: users.nickname,
+        avatarUrl: users.avatarUrl,
+      })
       .from(follows)
-      .where(eq(follows.followerId, userId));
-    return rows.map((r) => r.organizerId);
+      .innerJoin(users, eq(follows.followerId, users.id))
+      .where(eq(follows.organizerId, organizerId));
+    return rows;
   }
 }

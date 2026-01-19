@@ -57,3 +57,15 @@ export class UnauthorizedError extends DomainError {
     super("Unauthorized");
   }
 }
+
+export class CannotFollowSelfError extends DomainError {
+  constructor() {
+    super("You cannot follow yourself");
+  }
+}
+
+export class CannotFollowNonOrganizerError extends DomainError {
+  constructor() {
+    super("You can only follow organizers");
+  }
+}

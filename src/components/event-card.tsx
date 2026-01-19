@@ -18,8 +18,8 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-md">
-      <div className="relative h-48 w-full bg-muted">
+    <Card className="flex flex-col h-full overflow-hidden card-hover">
+      <div className="event-card-image">
         {event.flyerUrl ? (
           <Image
             src={event.flyerUrl}
@@ -28,13 +28,11 @@ export function EventCard({ event }: EventCardProps) {
             className="object-cover"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            No Image
-          </div>
+          <div className="no-image-placeholder">No Image</div>
         )}
       </div>
       <CardHeader>
-        <CardTitle className="line-clamp-1">{event.title}</CardTitle>
+        <CardTitle className="truncate pb-0.5">{event.title}</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 space-y-2 text-sm">
         <p className="line-clamp-2 text-muted-foreground">
@@ -57,9 +55,9 @@ export function EventCard({ event }: EventCardProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between items-center pt-4">
-        <Badge variant="secondary" className="flex items-center gap-1">
-          <TicketIcon className="h-3 w-3" />
-          {event.price}
+        <Badge variant="secondary" className="flex items-center gap-1 max-w-[50%]">
+          <TicketIcon className="h-3 w-3 shrink-0" />
+          <span className="truncate">{event.price}</span>
         </Badge>
         <Button asChild size="sm">
           <Link href={`/events/${event.id}`}>Show more...</Link>
